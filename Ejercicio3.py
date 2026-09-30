@@ -29,7 +29,7 @@ def incremental_load(
   target_table_path: str,
   conf: Dict[str, Any]
 ) -> None:
-  #Ejecuta craga incremental en formato Delta Lake
+  #Ejecuta carga incremental en formato Delta Lake
   #1. Si la tabla no existe, la crea particionada
   #2. Si la tabla existe, ejecuta MERGE respetando el watermark, para evitar sobreescrituras
 
@@ -89,7 +89,7 @@ schema = StructType([
 #1. Crear inventory_silver actual
 historical_data = [
   ("P-100", "GT", 45, "2024-05-01 08:00:00"),
-  ("P=101", "GT", 12, "2024-05-01 08:00:00"),
+  ("P-101", "GT", 12, "2024-05-01 08:00:00"),
   ("P-100", "HN", 20, "2024-05-01 08:00:00"),
   ("P-102", "AR", 8, "2024-04-30 17:30:00")
 ]

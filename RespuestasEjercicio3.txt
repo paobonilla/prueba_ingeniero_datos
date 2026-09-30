@@ -1,0 +1,71 @@
+ejercicio 3 respuestas preguntas
+10. Define la configuración (merge_keys, columna de watermark) en un diccionario Python. 
+#diccionario merge
+conf: Dict[str, Any]= {
+  #Llaves compuestas
+  "merge_keys": ["producto_id", "pais_cd"],
+  #Columna temporal de control incremental
+  "watermark_col": "updated_ts",
+  #Columna de particionamiento fisico para el almacenamiento Silver
+  "partition_cols": ["pais_cd"],
+}
+
+11. Escribe incremental_load(spark, batch_df, target_table_path, conf): que revise si la tabla ya existe (si no, la crea), 
+que respete el watermark para no pisar datos con algo más viejo, que inserte lo nuevo, y actualice solo cuando corresponde. 
+def incremental_load(
+  spark: SparkSession,
+  batch_df: DataFrame,
+  target_table_path: str,
+  conf: Dict[str, Any]
+) -> None:
+  #Ejecuta carga incremental en formato Delta Lake
+  #1. Si la tabla no existe, la crea particionada
+  #2. Si la tabla existe, ejecuta MERGE respetando el watermark, para evitar sobreescrituras
+
+  merge_keys = conf["merge_keys"]
+  watermark_col = conf["watermark_col"]
+  partition_cols = conf.get("partition_cols", [])
+
+  #Verificar si existe la tabla Delta en la ruta destino
+  table_exists = os.path.exists(target_table_path) and DeltaTable.isDeltaTable(spark, target_table_path)
+    
+  if not table_exists:
+    writer = batch_df.write.format("delta").mode("overwrite")
+    if partition_cols:
+      writer = writer.partitionBy(*partition_cols)
+    writer.save(target_table_path)
+    return
+
+  #Si ya existe la tabla
+  target = DeltaTable.forPath(spark, target_table_path)
+  join_match_cond = " AND ".join([f"t.{k} = s.{k}" for k in merge_keys])
+
+  #Solo se actualiza el registro si es el mas reciente
+  watermark_cond = f"s.{watermark_col} > t.{watermark_col}"
+
+  (
+    target.alias("t")
+    .merge(batch_df.alias("s"), join_match_cond)
+    .whenMatchedUpdateAll(condition=watermark_cond)
+    .whenNotMatchedInsertAll()
+    .execute()
+  )
+
+12. Dinos cómo queda inventory_silver después de correr tu función contra estos datos — las 4 filas originales más la nueva. 
+TABLA inventory_silver despues del MERGE                                        
++-----------+-------+---------+-------------------+                             
+|producto_id|pais_cd|stock_int|updated_ts         |
++-----------+-------+---------+-------------------+
+|P-102      |AR     |3        |2024-05-02 10:00:00|  
+|P-100      |GT     |40       |2024-05-02 09:10:00| 
+|P-101      |GT     |12       |2024-05-01 08:00:00| 
+|P-103      |GT     |5        |2024-05-02 09:12:00| 
+|P-100      |HN     |20       |2024-05-01 08:00:00| 
++-----------+-------+---------+-------------------+
+
+Justificacion de los resultados de la tabla
+** P-102 AR se hizo UPDATE el stock de 8 a 3 y el updated_ts se actualizo con el dato mas reciente '2024-05-02 10:00:00'
+** P-100 GT se hizo UPDATE de 45 a 40 y el updated_ts cambio a '2024-05-02 09:10:00'
+** P-101 GT permanece igual sin cambios
+** P-103 GT un producto nuevo para el pais se hace INSERT con un stock de 5
+** P-100 HN solo se deja la fecha mas reciente por lo que dio false para hacer el cambio
