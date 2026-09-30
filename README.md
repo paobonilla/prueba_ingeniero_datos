@@ -1,4 +1,4 @@
-# Prueba Técnica — Data Engineer Jr.
+# Prueba Técnica — Ingeniero de datos Jr
 
 Solución a la prueba técnica de ingeniería de datos desarrollada en PySpark y Delta Lake.
 
