@@ -1,0 +1,55 @@
+[
+  {
+    "_id": "60c1f2a1e4b0a1a2b3c4d5e6",
+    "country": "GT",
+    "full_name": "María López",
+    "contact": {
+      "phones": ["+50255512345", "+50255598765"],
+      "email": "maria.lopez@example.com"     
+    },     
+    "created_at": "2024-03-11T14:22:00Z",
+    "is_active": "true",
+    "purchases": [
+      {"order_id": "ORD-001", "amount": 129.5, "currency": "GTQ"},
+      {"order_id": "ORD-002", "amount": 45.0, "currency": "GTQ"}
+    ]
+  },
+  {     
+    "_id": "60c1f2a1e4b0a1a2b3c4d5e7",
+    "country": "SV",
+    "full_name": "Carlos Reyes",
+    "contact": { "phones": [], "email": null },
+    "created_at": null,
+    "is_active": 1,
+    "purchases": []
+  },
+  {
+    "_id": "60c1f2a1e4b0a1a2b3c4d5e8",
+    "country": "ec",
+    "full_name": "Ana Torres",
+    "contact": {
+      "phones": ["+593987654321"],
+      "email": "ana.torres@example.com"
+      },
+    "created_at": "2024-03-12 09:15:00",
+    "is_active": "false",
+    "purchases": [
+      {"order_id": "ORD-003", "amount": 88.25, "currency": "USD"}
+    ]   
+  },   
+  {     
+    "_id": "60c1f2a1e4b0a1a2b3c4d5e9",
+    "country": "PE",
+    "full_name": null,
+    "contact": {
+      "phones": ["+51987654321"],
+      "email": "sin_nombre@example.com"
+    },
+    "created_at": "2024-03-13T08:00:00Z",
+    "is_active": "true",
+    "purchases": [
+      {"order_id": "ORD-004", "amount": 200.0, "currency": "PEN"},
+      {"order_id": "ORD-005", "amount": null, "currency": "PEN"}     
+    ]
+  } 
+] 

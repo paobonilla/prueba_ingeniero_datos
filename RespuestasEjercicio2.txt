@@ -1,0 +1,13 @@
+ejercicio 2 respuestas preguntas
+6. ¿Qué pasa exactamente cuando dos países generan el mismo order_id_txt con las merge_keys actuales?
+Ocurre una sobreescritura de datos. Al evaluar t.order_id_txt = s.order_id_txt porque ORD-100 aparece en Ecuador y Guatemala, por lo que la orden de un pais se sobreescribe en la del otro
+
+7. ¿Por qué el join contra customers_silver puede estar multiplicando filas, y en qué momento lo arreglarías? 
+En la capa Silver un cliente puede tener mas de un registro, entonces cuando se hace LEFT JOIN la orden se duplica
+Antes del JOIN filtrando customers_silver para tener el registro mas reciente del cliente
+
+8. ¿Qué problema concreto trae particionar solo por updated_dt cuando el equipo opera en 9 países? 
+Particionar solo por la fecha hace que se traigan los datos de los 9 paises, entonces lo recomendable es particionar por pais y luego por fecha
+
+9. ¿cuándo SÍ sería seguro usar whenMatchedUpdateAll() tal cual, sin ninguna condición extra?
+Solo cuando la tabla origen y tabla destino tienen los mismos campos base, porque se realiza sin riesgo de sobreescritura de datos
